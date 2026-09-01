@@ -1,0 +1,11 @@
+- name: Query database status
+  shell: pwsh
+  env:
+    SQLSERVER:   ${{ secrets.SQL_SERVER }}
+    SQLDATABASE: ${{ secrets.SQL_DATABASE }}
+  run: |
+    $query = "SELECT name, state_desc, recovery_model_desc FROM sys.databases ORDER BY name;"
+    $results = Invoke-Sqlcmd -ServerInstance $env:SQLSERVER -Database $env:SQLDATABASE -Query $query -TrustServerCertificate -ErrorAction Stop
+    $results | Format-Table -AutoSize | Out-String | Write-Host
+    $notOnline = $results | Where-Object { $_.state_desc -ne 'ONLINE' }
+    if ($notOnline) { Write-Host "::error::Databases not ONLINE"; exit 1 }
