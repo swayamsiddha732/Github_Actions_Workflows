@@ -1,0 +1,20 @@
+name: FirstWorkflow
+
+on: 
+  workflow_dispatch:          # manual "Run workflow" button
+  push:
+    branches: [ main ]        # also run on every push to main
+
+jobs:
+  hello-powershell:
+    runs-on: [self-hosted, windows]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Say hello from PowerShell
+        shell: pwsh
+        run: |
+          Write-Host "Hello from GitHub Actions on $env:COMPUTERNAME"
+          Write-Host "PowerShell version: $($PSVersionTable.PSVersion)"
+          Write-Host "Current time: $(Get-Date)"
